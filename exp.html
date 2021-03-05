@@ -33,10 +33,10 @@
 
 let subjID = Number(jsPsych.data.getURLVariable("id")); // get subject ID from URL query string
 if (isNaN(subjID)) { // if there is no value, and your counterbalancing depends on your subject ID, generate a random number
-  subjID = getRandomInt(1,10);
+  subjID = getRandomInt(0,29);
 }
 
-let file_name = `myExp_${subjID}`; // create name for your data file
+let file_name = `WMinRL_${subjID}`; // create name for your data file
 let n = 9; //subjID % numConds; // set up your counterbalancing variable
 
 // declare timeline
