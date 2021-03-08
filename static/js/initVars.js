@@ -3,7 +3,7 @@ imported before your other JS files containing your functions, especially if tho
 functions rely on these variables as globals. */
 
 const IS_RUN_PRACTICE = true;
-const IS_RUN_TRAIN = false;
+const IS_RUN_TRAIN = true;
 
 // experiment parameters
 const KEYS = [86,66,78]; // numeric codes for v, b, n
