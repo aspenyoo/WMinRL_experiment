@@ -8,7 +8,7 @@ timeline.push({
   type: "html-keyboard-response",
   stimulus: `<div class='center'><p>In this experiment, you will see a series of images on the screen.<br><br>
   Please respond to each image by pressing one of the three buttons on the keyboard,
-  V, B, or N, with your dominant hand.
+  J, K, or L, with your dominant hand.
   </p></div>`+CONTINUE,
   choices: [32],
 });
@@ -32,7 +32,7 @@ If you select the incorrect key or do not respond, you will earn <span style="co
 timeline.push({
   type: "html-keyboard-response",
   stimulus: `<div class='center'><p>Push the space bar to try this task out with two images. <br><br>
-Remember to respond with the V, B, or N keys.
+Remember to respond with the J, K, or L keys.
 </p></div>`+CONTINUE,
   choices: [32],
 });
@@ -90,7 +90,7 @@ When that happens, you'll need to figure out what the new correct action is!
   timeline.push({
   type: "html-keyboard-response",
   stimulus: `<div class='center'><p>Push the space bar to try this task out with one image. <br><br>
-Remember to respond with the V, B, or N keys.
+Remember to respond with the J, K, or L keys.
 </p></div>`+CONTINUE,
   choices: [32],
 });

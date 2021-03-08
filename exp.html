@@ -37,7 +37,6 @@ if (isNaN(subjID)) { // if there is no value, and your counterbalancing depends 
 }
 
 let file_name = `WMinRL_${subjID}`; // create name for your data file
-let n = 9; //subjID % numConds; // set up your counterbalancing variable
 
 // declare timeline
 let timeline = [];
@@ -45,7 +44,7 @@ let timeline = [];
 // use a Promise if you're importing data since it takes longer to import local data than running
 // the functions that create the rest of the task. you can avoid promise chains if you import your
 // sequences that are stored somewhere online via XMLHttpRequest().
-Papa.parsePromise(`static/csv/sequence${n}.csv`)
+Papa.parsePromise(`static/csv/sequence${subjID}.csv`)
 
   .then(results => {return createPhase(results);}) // then use previous results as argument for your main experiment function
 

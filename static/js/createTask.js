@@ -227,7 +227,7 @@ const createPractice2 = function(b,seqs) {
 
   // get reversal related variables
   let correct_counter_vec = [0];
-  let reversal_pt_vec = [4];
+  let reversal_pt_vec = [5];
   let correct_response_vec = [Math.floor(Math.random()*3)];
 
   // a helper function that adds all the image stimuli for this block. this allows the image files
@@ -260,7 +260,7 @@ const createPractice2 = function(b,seqs) {
     // if (kill_practice == 0) {
       timeline.push(fixation);
       let stim = seqs.allStims[bStart+t];
-      createRevTrial(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec);
+      createPracticeRevTrial(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec);
 
       // let newkey = jsPsych.data.get().filter({block: b, trial: t}).values()[0];
       // if (!(oldkey==newkey)) {
@@ -316,85 +316,73 @@ const createPractice2 = function(b,seqs) {
 
 }
 
-// const createPracticeRevTrial = function(b,t,folder,stim,bStart,revcounter,correct_counter_vec,reversal_pt_vec,correct_response_vec) {
-//   // helper function that dynamically determines the stimulus as it creates each trial
+const createPracticeRevTrial = function(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec) {
+  // helper function that dynamically determines the stimulus as it creates each trial
 
-//   let istim = stim-1;
+  let istim = stim-1;
 
-//   const setTrial = function(trial) {
-//     // console.log(folder);
-//     trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
+  const setTrial = function(trial) {
+    // console.log(folder);
+    trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
 
-//     // if participant has gotten some amount correct in a row
+    // if participant has gotten some amount correct in a row
+    if (correct_counter_vec[istim] >= reversal_pt_vec[istim]) {
+      correct_counter_vec[istim] = 0;
+      reversal_pt_vec[istim] = Math.floor(Math.random()*3)+3;
+      let xx = [0,1,2]; // possible responses (hard-coded)
+      xx.splice(correct_response_vec[istim],1); // remove previous response
+      correct_response_vec[istim] = xx[Math.floor(Math.random()*2)]; //randomly sampling from remaining options (hard-coded)
+      console.log("stimulus, reversal pt, correct response")
+      console.log(stim)
+      console.log(reversal_pt_vec[istim]);
+      console.log(correct_response_vec[istim]);
+    }
+    let cor = correct_response_vec[istim];
+    trial.data.key_answer = cor;
+    trial.key_answer = KEYS[cor];
+    return trial;
+  }
 
-//     if (correct_counter_vec[istim] >= reversal_pt_vec[istim]) {
-//       correct_counter_vec[istim] = 0;
-//       reversal_pt_vec[istim] = Math.floor(Math.random()*3)+2;
-//       let xx = [0,1,2]; // possible responses (hard-coded)
-//       xx.splice(correct_response_vec[istim],1); // remove previous response
-//       correct_response_vec[istim] = xx[Math.floor(Math.random()*2)]; //randomly sampling from remaining options (hard-coded)
-//       revcounter[0] = revcounter[0]+1;
-//       console.log("stimulus, reversal pt, correct response")
-//       console.log(stim)
-//       console.log(reversal_pt_vec[istim]);
-//       console.log(correct_response_vec[istim]);
-//       console.log(revcounter)
-//       // let newKey = correct_response_vec[istim];
-//     }
-//     let cor = correct_response_vec[istim];
-//     trial.data.key_answer = cor;
-//     trial.key_answer = KEYS[cor];
-//     return trial;
-//   }
+  // helper function that dynamically updates the data object with info like key press. you can add other values to data as needed
+  const setData = function(data) {
+    let answer = data.key_press;
+    data.stimulus = stim;
+    data.key_press = KEYS.indexOf(answer);
 
-//   // helper function that dynamically updates the data object with info like key press. you can add other values to data as needed
-//   const setData = function(data) {
-//     let answer = data.key_press;
-//     data.stimulus = stim;
-//     data.key_press = KEYS.indexOf(answer);
+    // let rel_data = jsPsych.data.get().filter({block: b, stimulus: stim}).last();
+    // console.log(rel_data);
+    if (jsPsych.pluginAPI.compareKeys(data.key_press, data.key_answer)) {
+      // increase counter if correct
+        correct_counter_vec[istim] = correct_counter_vec[istim]+1;
+      } else {
+        // set counter to zero
+        correct_counter_vec[istim] = 0;
+      }
 
-//     // let rel_data = jsPsych.data.get().filter({block: b, stimulus: stim}).last();
-//     // console.log(rel_data);
-//     if (jsPsych.pluginAPI.compareKeys(data.key_press, data.key_answer)) {
-//       // increase counter if correct
-//         correct_counter_vec[istim] = correct_counter_vec[istim]+1;
-//       } else {
-//         // set counter to zero
-//         correct_counter_vec[istim] = 0;
-//       }
-
-//     data.reversal_crit = reversal_pt_vec[istim];
-//     data.counter = correct_counter_vec[istim];
-
-//     if (revcounter>2) {
-//       console.log("blah1")
-//       if (correct_counter_vec[istim]>1) {
-//         console.log("blah2")
-//         var kill_practice = 1;
-//       }
-//     }
-//     return data;
-//   }
-//   // initialize the trial object
-//   let trial = {
-//     type: "categorize-html",
-//     correct_text: COR_FB,
-//     incorrect_text: INCOR_FB,
-//     on_start: setTrial,
-//     choices: KEYS,
-//     timeout_message: TO_MSG,
-//     trial_duration: TRIAL_DUR,
-//     feedback_duration: FB_DUR,
-//     on_finish: setData,
-//     show_stim_with_feedback: false,
-//     data: {
-//       set: folder,
-//       block: b,
-//       trial: t+1,
-//     }
-//   };
-//   timeline.push(trial);
-// }
+    data.reversal_crit = reversal_pt_vec[istim];
+    data.counter = correct_counter_vec[istim];
+    return data;
+  }
+  // initialize the trial object
+  let trial = {
+    type: "categorize-html",
+    correct_text: COR_FB,
+    incorrect_text: INCOR_FB,
+    on_start: setTrial,
+    choices: KEYS,
+    timeout_message: TO_MSG,
+    trial_duration: TRIAL_DUR,
+    feedback_duration: FB_DUR,
+    on_finish: setData,
+    show_stim_with_feedback: false,
+    data: {
+      set: folder,
+      block: b,
+      trial: t+1,
+    }
+  };
+  timeline.push(trial);
+}
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
                     NON REVERSAL STUFF
