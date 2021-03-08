@@ -71,8 +71,8 @@ const createInstructions2 = function() {
   type: "html-keyboard-response",
   on_start: trial => { // save data from previous practice block (block 1)
     let toSave = jsPsych.data.get().filter({block: 1});
-    let blockFileName = `${file_name}_block_${b}`;
-    save_data_csv(blockFileName, toSave); 
+    let blockFileName = `${file_name}_block_1`;
+    save_data_csv(blockFileName, toSave);
   },
   stimulus: `<div class='center'><p>Great job! <br><br>
   Now the task is going to get a little harder.
@@ -101,7 +101,7 @@ const createInstructions3 = function() {
   type: "html-keyboard-response",
   on_start: trial => { // save data from previous practice block (block 2)
     let toSave = jsPsych.data.get().filter({block: 2});
-    let blockFileName = `${file_name}_block_${b}`;
+    let blockFileName = `${file_name}_block_2`;
     save_data_csv(blockFileName, toSave);
   },
   stimulus: `<div class='center'><p>Great job! You have completed the practice section. <br><br>
