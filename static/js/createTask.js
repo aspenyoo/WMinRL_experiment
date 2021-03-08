@@ -39,16 +39,16 @@ if (IS_RUN_TRAIN) { // for debugging purposes
   timeline.push({
     on_start: trial => {
       let toSave = jsPsych.data.get(); // retrieve all data to save
-      //save_data_csv(file_name,toSave); // save final file as csv
+      save_data_csv(file_name,toSave); // save final file as csv
     },
     type: "html-keyboard-response",
     stimulus: "<div class='center'><p>Saving data... please do not close this window. This will take a few seconds. </p></div>",
     choices: jsPsych.NO_KEYS,
     trial_duration: 5000, // change this depending on how large your file is
-    on_finish: function() {
-        jsPsych.data.displayData('csv');
-    //on_finish: data => {
-    //  mail_data_csv(file_name); // mail the data file you just saved
+    // on_finish: function() {
+    //     jsPsych.data.displayData('csv');
+    on_finish: data => {
+      mail_data_csv(file_name); // mail the data file you just saved
     }
   });
 
@@ -121,7 +121,7 @@ const createRevBlock = function(b,seqs) {
 
     let toSave = jsPsych.data.get().filter({block: b}); // retrieve block data to save
     let blockFileName = `${file_name}_block_${b}`; // create new file name for block data
-    //save_data_csv(blockFileName, toSave); // save block data
+    save_data_csv(blockFileName, toSave); // save block data
 
     let pts = jsPsych.data.get().filter({block: b, correct: true}).count(); // calculate points
     console.log(pts);
@@ -156,7 +156,7 @@ const createRevTrial = function(b,t,folder,stim,bStart,correct_counter_vec,rever
   const setTrial = function(trial) {
     // console.log(folder);
     trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
-    
+
     // if participant has gotten some amount correct in a row
     if (correct_counter_vec[istim] >= reversal_pt_vec[istim]) {
       correct_counter_vec[istim] = 0;
@@ -177,11 +177,11 @@ const createRevTrial = function(b,t,folder,stim,bStart,correct_counter_vec,rever
 
 	// helper function that dynamically updates the data object with info like key press. you can add other values to data as needed
   const setData = function(data) {
-    let answer = data.key_press; 
-    data.stimulus = stim; 
-    data.key_press = KEYS.indexOf(answer); 
+    let answer = data.key_press;
+    data.stimulus = stim;
+    data.key_press = KEYS.indexOf(answer);
 
-    // let rel_data = jsPsych.data.get().filter({block: b, stimulus: stim}).last(); 
+    // let rel_data = jsPsych.data.get().filter({block: b, stimulus: stim}).last();
     // console.log(rel_data);
     if (jsPsych.pluginAPI.compareKeys(data.key_press, data.key_answer)) {
       // increase counter if correct
@@ -193,7 +193,7 @@ const createRevTrial = function(b,t,folder,stim,bStart,correct_counter_vec,rever
 
     data.reversal_crit = reversal_pt_vec[istim];
     data.counter = correct_counter_vec[istim];
-    return data; 
+    return data;
   }
 	// initialize the trial object
   let trial = {
@@ -302,7 +302,7 @@ const createPractice2 = function(b,seqs) {
   //     timeline.push({
   //     type: "html-keyboard-response",
   //     stimulus: `<div class='center'><p>Push the space bar to try this task out with one image. <br><br>
-  //   Remember to respond with the V, B, or N keys. 
+  //   Remember to respond with the V, B, or N keys.
   //   </p></div>`+CONTINUE,
   //     choices: [32],
   //   });
@@ -324,7 +324,7 @@ const createPractice2 = function(b,seqs) {
 //   const setTrial = function(trial) {
 //     // console.log(folder);
 //     trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
-    
+
 //     // if participant has gotten some amount correct in a row
 
 //     if (correct_counter_vec[istim] >= reversal_pt_vec[istim]) {
@@ -349,11 +349,11 @@ const createPractice2 = function(b,seqs) {
 
 //   // helper function that dynamically updates the data object with info like key press. you can add other values to data as needed
 //   const setData = function(data) {
-//     let answer = data.key_press; 
-//     data.stimulus = stim; 
-//     data.key_press = KEYS.indexOf(answer); 
+//     let answer = data.key_press;
+//     data.stimulus = stim;
+//     data.key_press = KEYS.indexOf(answer);
 
-//     // let rel_data = jsPsych.data.get().filter({block: b, stimulus: stim}).last(); 
+//     // let rel_data = jsPsych.data.get().filter({block: b, stimulus: stim}).last();
 //     // console.log(rel_data);
 //     if (jsPsych.pluginAPI.compareKeys(data.key_press, data.key_answer)) {
 //       // increase counter if correct
@@ -373,7 +373,7 @@ const createPractice2 = function(b,seqs) {
 //         var kill_practice = 1;
 //       }
 //     }
-//     return data; 
+//     return data;
 //   }
 //   // initialize the trial object
 //   let trial = {
@@ -396,7 +396,7 @@ const createPractice2 = function(b,seqs) {
 //   timeline.push(trial);
 // }
 
-/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
                     NON REVERSAL STUFF
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
@@ -452,10 +452,10 @@ const createTrial = function(b,t,folder,stim,cor,bStart) {
   }
   // helper function that dynamically updates the data object with info like key press. you can add other values to data as needed
   const setData = function(data) {
-    let answer = data.key_press; 
-    data.stimulus = stim; 
-    data.key_press = KEYS.indexOf(answer); 
-  return data; 
+    let answer = data.key_press;
+    data.stimulus = stim;
+    data.key_press = KEYS.indexOf(answer);
+  return data;
   }
   // initialize the trial object
   let trial = {

@@ -25,7 +25,7 @@ const COR_FB = '<div class="exp"><p class="center fb cor">+1</p></div>';
 const INCOR_FB = '<div class="exp"><p class="center fb incor">0</p></div>';
 
 const CONTINUE = '<p class="continue">[Press SPACE to continue]</p>'; // instruction page footer
-const END_LINK = "https://experiments-ccn.berkeley.edu/" // if participants need to be redirected to a page to obtain credit
+const END_LINK = "http://ucbpsych.qualtrics.com/jfe/form/SV_cZqzukGcYdKQOHQ" // if participants need to be redirected to a page to obtain credit
 
 // string array of all img files, each element is the path of an img to import
 // this is used for preloading

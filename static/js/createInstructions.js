@@ -8,7 +8,7 @@ timeline.push({
   type: "html-keyboard-response",
   stimulus: `<div class='center'><p>In this experiment, you will see a series of images on the screen.<br><br>
   Please respond to each image by pressing one of the three buttons on the keyboard,
-  V, B, or N, with your dominant hand. 
+  V, B, or N, with your dominant hand.
   </p></div>`+CONTINUE,
   choices: [32],
 });
@@ -25,14 +25,14 @@ If you do not respond, the trial will be counted as a loss.
 timeline.push({
   type: "html-keyboard-response",
   stimulus: `<div class='center'><p>If you select the correct button, you will gain <span style="color:green;">+1</span> point. <br><br>
-If you select the incorrect key or do not respond, you will earn <span style="color:red;">0</span> points. 
+If you select the incorrect key or do not respond, you will earn <span style="color:red;">0</span> points.
 </p></div>`+CONTINUE,
   choices: [32],
 });
 timeline.push({
   type: "html-keyboard-response",
   stimulus: `<div class='center'><p>Push the space bar to try this task out with two images. <br><br>
-Remember to respond with the V, B, or N keys. 
+Remember to respond with the V, B, or N keys.
 </p></div>`+CONTINUE,
   choices: [32],
 });
@@ -58,7 +58,7 @@ Remember to respond with the V, B, or N keys.
 //   type: "html-keyboard-response",
 //   stimulus: `<div class='center'><p>Remember the following important rules:<br><br>
 // 1. At any given time, there is ONLY ONE correct response for each image.<br><br>
-// 2. Within each block, the correct response for each image WILL CHANGE. 
+// 2. Within each block, the correct response for each image WILL CHANGE.
 // After you gain points for an image multiple times, you will have to find the new key to press to win again.<br><br>
 // 3. One response button MAY be correct for multiple images, or not be correct for any image.
 // </p></div>`+CONTINUE,
@@ -69,9 +69,14 @@ Remember to respond with the V, B, or N keys.
 const createInstructions2 = function() {
   timeline.push({
   type: "html-keyboard-response",
+  on_start: trial => { // save data from previous practice block (block 1)
+    let toSave = jsPsych.data.get().filter({block: 1});
+    let blockFileName = `${file_name}_block_1`;
+    save_data_csv(blockFileName, toSave);
+  },
   stimulus: `<div class='center'><p>Great job! <br><br>
-Now the task is going to get a little harder.
-</p></div>`+CONTINUE,
+  Now the task is going to get a little harder.
+  </p></div>`+CONTINUE,
   choices: [32],
 });
   timeline.push({
@@ -85,7 +90,7 @@ When that happens, you'll need to figure out what the new correct action is!
   timeline.push({
   type: "html-keyboard-response",
   stimulus: `<div class='center'><p>Push the space bar to try this task out with one image. <br><br>
-Remember to respond with the V, B, or N keys. 
+Remember to respond with the V, B, or N keys.
 </p></div>`+CONTINUE,
   choices: [32],
 });
@@ -94,8 +99,13 @@ Remember to respond with the V, B, or N keys.
 const createInstructions3 = function() {
   timeline.push({
   type: "html-keyboard-response",
+  on_start: trial => { // save data from previous practice block (block 2)
+    let toSave = jsPsych.data.get().filter({block: 2});
+    let blockFileName = `${file_name}_block_2`;
+    save_data_csv(blockFileName, toSave);
+  },
   stimulus: `<div class='center'><p>Great job! You have completed the practice section. <br><br>
-  You will now begin the task. 
+  You will now begin the task.
 </p></div>`+CONTINUE,
   choices: [32],
 });
@@ -113,13 +123,10 @@ timeline.push({
   type: "html-keyboard-response",
   stimulus: `<div class='center'><p>Remember the following important rules:<br><br>
 1. At any given time, there is ONLY ONE correct response for each image.<br><br>
-2. Within each block, the correct response for each image WILL CHANGE. 
+2. Within each block, the correct response for each image WILL CHANGE.
 After you gain points for an image multiple times, you will have to find the new key to press to win again.<br><br>
 3. One response button MAY be correct for multiple images, or not be correct for any image.
 </p></div>`+CONTINUE,
   choices: [32],
 });
 }
-
-
-
