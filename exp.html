@@ -32,9 +32,10 @@
 <script type="text/javascript">
 
 let subjID = Number(jsPsych.data.getURLVariable("id")); // get subject ID from URL query string
-let randintt = getRandomInt(0,29);
+let t = new Date();
+let iseq = t.getTime() % 20; // modulo current time with number of sequences
 if (isNaN(subjID)) { // if there is no value, and your counterbalancing depends on your subject ID, generate a random number
-  subjID = randintt;
+  subjID = iseq;
 }
 
 let file_name = `WMinRL_${subjID}`; // create name for your data file
@@ -45,7 +46,29 @@ let timeline = [];
 // use a Promise if you're importing data since it takes longer to import local data than running
 // the functions that create the rest of the task. you can avoid promise chains if you import your
 // sequences that are stored somewhere online via XMLHttpRequest().
-Papa.parsePromise(`static/csv/sequence${randintt}.csv`)
+Papa.parsePromise(`static/csv/sequence${iseq}.csv`)
+
+  // .then(results => {
+  //    console.log('blah')
+
+  //   var trial = {
+  //       type: 'html-keyboard-response',
+  //       stimulus: 'This trial is in a loop. Press R to repeat this trial, or C to continue.',
+  //       choices: [32, 74],
+  //   }
+
+  //   var loop_node = {
+  //       timeline: trial,
+  //       loop_function: function(data){
+  //           if(jsPsych.pluginAPI.compareKeys(data.values()[0].response, 'j')){
+  //               return true;
+  //           } else {
+  //               return false;
+  //           }
+  //       }
+  //   }
+  //    return results
+  // })
 
   .then(results => {return createPhase(results);}) // then use previous results as argument for your main experiment function
 

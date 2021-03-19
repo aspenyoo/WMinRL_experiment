@@ -6,6 +6,14 @@ or "html-keyboard-response" for keys. Check jsPsych to see more configurations. 
 const createInstructions1 = function() {
 timeline.push({
   type: "html-keyboard-response",
+  stimulus: `<div class='center'><p>Hello! Please maximize this window and 
+  turn off all notifications on your computer. <br><br>
+  this game will require you to focus! Please make sure you're in a quiet environment.
+  </p></div>`+CONTINUE,
+  choices: [32],
+});
+timeline.push({
+  type: "html-keyboard-response",
   stimulus: `<div class='center'><p>In this experiment, you will see a series of images on the screen.<br><br>
   Please respond to each image by pressing one of the three buttons on the keyboard,
   J, K, or L, with your dominant hand.

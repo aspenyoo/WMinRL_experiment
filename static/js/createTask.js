@@ -19,14 +19,26 @@ const createPhase = function(csv) { // create a phase (e.g. training phase) of y
   seqs.imgFolders = csv[4]; // sequence of all image folders across blocks
   csv = [];
 
+// =================================================================================
+//                              PRACTICE SECTION
+// =================================================================================
+
+
 if (IS_RUN_PRACTICE) { // for debugging purposes
   createInstructions1();
-  createBlock(1,seqs); // first practice block
+
+  createPracticeBlock(1,seqs);
   createInstructions2();
+
   createPractice2(2,seqs); // second practice block
+
   createInstructions3();
 }
 
+
+// =================================================================================
+//                              ACTUAL TASK SECTION
+// =================================================================================
 
 if (IS_RUN_TRAIN) { // for debugging purposes
   for (b = 3; b < NUM_BLOCKS + 1; b++) { // to index starting at 1
@@ -89,7 +101,7 @@ const createRevBlock = function(b,seqs) {
   // a helper function that adds all the image stimuli for this block. this allows the image files
   // to be dynamically created at the start of each block, so the images will be different to each block according to the image folder.
   const setStim = function(trial) {
-    let stim = "<div class='exp'><p>Take some time to identify the images below:</p><table class='center'>";
+    let stim = `<div class='exp'><p>Block ${b-2} of 20. <br><br> Take some time to identify the images below:</p><table class='center'>`;
     for (s=1; s < setSize+1; s++) {
       if (s%3 == 1) stim += '<tr>'
       stim += `<td><img class="disp" src="${imgP}images${folder}/image${s}.jpg"></td>`;
@@ -125,9 +137,8 @@ const createRevBlock = function(b,seqs) {
 
     let pts = jsPsych.data.get().filter({block: b, correct: true}).count(); // calculate points
     console.log(pts);
-    trial.stimulus = `<div class="center"><p>Total number of earned points: ${pts} out of ${numTrials}.</p>\
-    <br><p>End of block - You may take a break!</p><br><p>Press space when \
-    you're ready to move to the next block.</p></div>`;
+    trial.stimulus = `<div class="center"><p>End of block - you earned ${pts} points!</p>\
+    <br><p>You have a 1 minute break before the next block begins, but you can press space to continue now.</p></div>`;
   }
 
   // push block end points and instructions
@@ -135,7 +146,7 @@ const createRevBlock = function(b,seqs) {
     on_start: setPoints,
     type: "html-keyboard-response",
     choices: [32],
-    // you may want to make this timed so participants can't wait on this trial forever
+    trial_duration: 60000,
   });
 }
 
@@ -261,59 +272,7 @@ const createPractice2 = function(b,seqs) {
       timeline.push(fixation);
       let stim = seqs.allStims[bStart+t];
       createPracticeRevTrial(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec);
-
-      // let newkey = jsPsych.data.get().filter({block: b, trial: t}).values()[0];
-      // if (!(oldkey==newkey)) {
-      //   revcounter = revcounter+1;
-      // }
-      // if (revcounter>=3) {
-      //   let counterr = jsPsych.data.get().filter({block: b, trial: t}).values();
-      //   console.log(counterr)
-      //   console.log(counterr[1])
-      //   console.log(counterr[2])
-      //   console.log(counterr[3])
-      //   if (counterr == 2) {
-      //     kill_practice=1;
-      //   }
-      // }
-      // console.log(oldkey);
-      // console.log(newkey);
-      // oldkey = newkey;
-    // }
   }
-  // do it again if didn't perform high enough
-  // if (revcounter[0]<2) {
-  //   console.log("blah")
-  //   timeline.push({
-  //     type: "html-keyboard-response",
-  //     stimulus: `<div class='center'><p>You seem to be having some difficulty here. <br><br>
-  //     Let's try this again.
-  //   </p></div>`+CONTINUE,
-  //     choices: [32],
-  //   });
-  //     timeline.push({
-  //     type: "html-keyboard-response",
-  //     stimulus: `<div class='center'><p>The correct action for each image will stay the same for a while<br><br>
-  //   But after a while, the correct action for an image can change.<br><br>
-  //   When that happens, you'll need to figure out what the new correct action is!
-  //   </p></div>`+CONTINUE,
-  //     choices: [32],
-  //   });
-  //     timeline.push({
-  //     type: "html-keyboard-response",
-  //     stimulus: `<div class='center'><p>Push the space bar to try this task out with one image. <br><br>
-  //   Remember to respond with the V, B, or N keys.
-  //   </p></div>`+CONTINUE,
-  //     choices: [32],
-  //   });
-
-  //   for (t = 0; t < numTrials; t++) {
-  //     timeline.push(fixation);
-  //     let stim = seqs.allStims[bStart+t];
-  //     createPracticeRevTrial(b,t,folder,stim,bStart,revcounter,correct_counter_vec,reversal_pt_vec,correct_response_vec);
-  // }
-  // }
-
 }
 
 const createPracticeRevTrial = function(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec) {
@@ -366,8 +325,8 @@ const createPracticeRevTrial = function(b,t,folder,stim,bStart,correct_counter_v
   // initialize the trial object
   let trial = {
     type: "categorize-html",
-    correct_text: COR_FB,
-    incorrect_text: INCOR_FB,
+    correct_text: PRAC_COR_FB,
+    incorrect_text: PRAC_INCOR_FB,
     on_start: setTrial,
     choices: KEYS,
     timeout_message: TO_MSG,
@@ -392,7 +351,44 @@ const createPracticeRevTrial = function(b,t,folder,stim,bStart,correct_counter_v
 feedback to your participant, so you'll need to push a trial object containing
 points or further instructions. This is a good place to save your data.*/
 
-const createBlock = function(b,seqs) {
+const createPracticeTrial = function(b,t,folder,stim,cor,bStart) {
+  // helper function that dynamically determines the stimulus as it creates each trial
+  const setTrial = function(trial) {
+    console.log(folder);
+    trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
+    trial.data.key_answer = cor;
+    trial.key_answer = KEYS[cor];
+    return trial;
+  }
+  // helper function that dynamically updates the data object with info like key press. you can add other values to data as needed
+  const setData = function(data) {
+    let answer = data.key_press;
+    data.stimulus = stim;
+    data.key_press = KEYS.indexOf(answer);
+  return data;
+  }
+  // initialize the trial object
+  let trial = {
+    type: "categorize-html",
+    correct_text: PRAC_COR_FB,
+    incorrect_text: PRAC_INCOR_FB,
+    on_start: setTrial,
+    choices: KEYS,
+    timeout_message: TO_MSG,
+    trial_duration: TRIAL_DUR,
+    feedback_duration: FB_DUR,
+    on_finish: setData,
+    show_stim_with_feedback: false,
+    data: {
+      set: folder,
+      block: b,
+      trial: t+1,
+    }
+  };
+  timeline.push(trial);
+}
+
+const createPracticeBlock = function(b,seqs) {
   // get folders, setsize, number of trials for this block
   let bStart = seqs.allBlocks.indexOf(b);
   let setSize = seqs.setSizes[bStart];
@@ -425,43 +421,68 @@ const createBlock = function(b,seqs) {
     timeline.push(fixation);
     let stim = seqs.allStims[bStart+t];
     let cor = seqs.corKey[bStart+t];
-    createTrial(b,t,folder,stim,cor,bStart);
+    createPracticeTrial(b,t,folder,stim,cor,bStart);
   }
+
+    //intermediate feedback for trials
+    const intermedFed = function(trial) {
+
+    let toSave = jsPsych.data.get().filter({block: b}); // retrieve block data to save
+    let blockFileName = `${file_name}_block_${b}`; // create new file name for block data
+    save_data_csv(blockFileName, toSave); // save block data
+
+    let pts = jsPsych.data.get().filter({block: b, correct: true}).count(); // calculate points
+    console.log(pts);
+    trial.stimulus = `<div class="center"><p>End of block - you earned ${pts} points!</p>\
+    <br><p>You have a 1 minute break before the next block begins, but you can press space to continue now.</p></div>`;
+  }
+
+  // push block end points and instructions
+  timeline.push({
+    on_start: setPoints,
+    type: "html-keyboard-response",
+    choices: [32],
+    trial_duration: 60000,
+  });
+
 }
 
-const createTrial = function(b,t,folder,stim,cor,bStart) {
-  // helper function that dynamically determines the stimulus as it creates each trial
-  const setTrial = function(trial) {
-    console.log(folder);
-    trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
-    trial.data.key_answer = cor;
-    trial.key_answer = KEYS[cor];
-    return trial;
-  }
-  // helper function that dynamically updates the data object with info like key press. you can add other values to data as needed
-  const setData = function(data) {
-    let answer = data.key_press;
-    data.stimulus = stim;
-    data.key_press = KEYS.indexOf(answer);
-  return data;
-  }
-  // initialize the trial object
-  let trial = {
-    type: "categorize-html",
-    correct_text: COR_FB,
-    incorrect_text: INCOR_FB,
-    on_start: setTrial,
-    choices: KEYS,
-    timeout_message: TO_MSG,
-    trial_duration: TRIAL_DUR,
-    feedback_duration: FB_DUR,
-    on_finish: setData,
-    show_stim_with_feedback: false,
-    data: {
-      set: folder,
-      block: b,
-      trial: t+1,
-    }
-  };
-  timeline.push(trial);
-}
+
+
+
+// const createTrial = function(b,t,folder,stim,cor,bStart) {
+//   // helper function that dynamically determines the stimulus as it creates each trial
+//   const setTrial = function(trial) {
+//     console.log(folder);
+//     trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
+//     trial.data.key_answer = cor;
+//     trial.key_answer = KEYS[cor];
+//     return trial;
+//   }
+//   // helper function that dynamically updates the data object with info like key press. you can add other values to data as needed
+//   const setData = function(data) {
+//     let answer = data.key_press;
+//     data.stimulus = stim;
+//     data.key_press = KEYS.indexOf(answer);
+//   return data;
+//   }
+//   // initialize the trial object
+//   let trial = {
+//     type: "categorize-html",
+//     correct_text: COR_FB,
+//     incorrect_text: INCOR_FB,
+//     on_start: setTrial,
+//     choices: KEYS,
+//     timeout_message: TO_MSG,
+//     trial_duration: TRIAL_DUR,
+//     feedback_duration: FB_DUR,
+//     on_finish: setData,
+//     show_stim_with_feedback: false,
+//     data: {
+//       set: folder,
+//       block: b,
+//       trial: t+1,
+//     }
+//   };
+//   timeline.push(trial);
+// }

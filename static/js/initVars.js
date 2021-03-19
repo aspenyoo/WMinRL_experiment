@@ -24,6 +24,9 @@ const TO_MSG = '<div class="exp"><p class="center fb">You took too long to respo
 const COR_FB = '<div class="exp"><p class="center fb cor">+1</p></div>';
 const INCOR_FB = '<div class="exp"><p class="center fb incor">0</p></div>';
 
+const PRAC_COR_FB = '<div class="exp"><p class="center praccor fb">CORRECT KEY!</p></div>';
+const PRAC_INCOR_FB = '<div class="exp"><p class="center pracincor fb">WRONG KEY! <br><br> try a different key! </p></div>';
+
 const CONTINUE = '<p class="continue">[Press SPACE to continue]</p>'; // instruction page footer
 const END_LINK = "http://ucbpsych.qualtrics.com/jfe/form/SV_cZqzukGcYdKQOHQ" // if participants need to be redirected to a page to obtain credit
 
