@@ -6,9 +6,9 @@ or "html-keyboard-response" for keys. Check jsPsych to see more configurations. 
 const createInstructions1 = function() {
 timeline.push({
   type: "html-keyboard-response",
-  stimulus: `<div class='center'><p>Hello! Please maximize this window and 
+  stimulus: `<div class='center'><p>Hello! Before beginning the task, please maximize this window and 
   turn off all notifications on your computer. <br><br>
-  this game will require you to focus! Please make sure you're in a quiet environment.
+  This game will require you to focus! Please make sure you're in a quiet environment.
   </p></div>`+CONTINUE,
   choices: [32],
 });
@@ -120,7 +120,7 @@ const createInstructions3 = function() {
 timeline.push({
   type: "html-keyboard-response",
   stimulus: `<div class='center'><p>
-There are 16 blocks. <br><br>
+There are 21 blocks. <br><br>
 At the beginning of each block, you will be shown the set of images for that block.<br><br>
 Some blocks will have more images than others, but your goal is always the same. <br><br>
 You can take a short break between each block.

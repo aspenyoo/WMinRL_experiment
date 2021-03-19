@@ -48,28 +48,6 @@ let timeline = [];
 // sequences that are stored somewhere online via XMLHttpRequest().
 Papa.parsePromise(`static/csv/sequence${iseq}.csv`)
 
-  // .then(results => {
-  //    console.log('blah')
-
-  //   var trial = {
-  //       type: 'html-keyboard-response',
-  //       stimulus: 'This trial is in a loop. Press R to repeat this trial, or C to continue.',
-  //       choices: [32, 74],
-  //   }
-
-  //   var loop_node = {
-  //       timeline: trial,
-  //       loop_function: function(data){
-  //           if(jsPsych.pluginAPI.compareKeys(data.values()[0].response, 'j')){
-  //               return true;
-  //           } else {
-  //               return false;
-  //           }
-  //       }
-  //   }
-  //    return results
-  // })
-
   .then(results => {return createPhase(results);}) // then use previous results as argument for your main experiment function
 
   .then(timeline => { // take timeline as an argument to run jsPsych.init after all else is done

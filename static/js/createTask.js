@@ -26,12 +26,9 @@ const createPhase = function(csv) { // create a phase (e.g. training phase) of y
 
 if (IS_RUN_PRACTICE) { // for debugging purposes
   createInstructions1();
-
   createPracticeBlock(1,seqs);
   createInstructions2();
-
   createPractice2(2,seqs); // second practice block
-
   createInstructions3();
 }
 
@@ -76,6 +73,9 @@ if (IS_RUN_TRAIN) { // for debugging purposes
   return timeline;
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                    MAIN EXPERIMENTAL BLOCKS
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 // create blocks with reversals
 const createRevBlock = function(b,seqs) {
@@ -94,14 +94,11 @@ const createRevBlock = function(b,seqs) {
     reversal_pt_vec.push(Math.floor(Math.random()*3)+2);
     correct_response_vec.push(Math.floor(Math.random()*3));
   }
-  // console.log(correct_counter_vec);
-  // console.log(reversal_pt_vec);
-  // console.log(correct_response_vec);
 
   // a helper function that adds all the image stimuli for this block. this allows the image files
   // to be dynamically created at the start of each block, so the images will be different to each block according to the image folder.
   const setStim = function(trial) {
-    let stim = `<div class='exp'><p>Block ${b-2} of 20. <br><br> Take some time to identify the images below:</p><table class='center'>`;
+    let stim = `<div class='exp'><p>Block ${b-2} of 21. <br><br> Take some time to identify the images below:</p><table class='center'>`;
     for (s=1; s < setSize+1; s++) {
       if (s%3 == 1) stim += '<tr>'
       stim += `<td><img class="disp" src="${imgP}images${folder}/image${s}.jpg"></td>`;
@@ -140,7 +137,6 @@ const createRevBlock = function(b,seqs) {
     trial.stimulus = `<div class="center"><p>End of block - you earned ${pts} points!</p>\
     <br><p>You have a 1 minute break before the next block begins, but you can press space to continue now.</p></div>`;
   }
-
   // push block end points and instructions
   timeline.push({
     on_start: setPoints,
@@ -149,15 +145,6 @@ const createRevBlock = function(b,seqs) {
     trial_duration: 60000,
   });
 }
-
-/* createTrial() pushes your trial object to the timeline every time it'sc called.
-Inside createTrial are two helper functions: setTrial(trial), which sets up the stimuli,
-key_answer, and other parameters of your trial before the trial is presented, and
-setData(data), which lets you adjust other parameters of your data upon the end of the trial.
-You can also call your save function in setData.
-
-Note: I don't advise saving per trial, especially not saving cumulative data: it
-costs memory allocation and storage space on the server. */
 
 const createRevTrial = function(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec) {
 	// helper function that dynamically determines the stimulus as it creates each trial
@@ -175,10 +162,10 @@ const createRevTrial = function(b,t,folder,stim,bStart,correct_counter_vec,rever
       let xx = [0,1,2]; // possible responses (hard-coded)
       xx.splice(correct_response_vec[istim],1); // remove previous response
       correct_response_vec[istim] = xx[Math.floor(Math.random()*2)]; //randomly sampling from remaining options (hard-coded)
-      console.log("stimulus, reversal pt, correct response")
-      console.log(stim)
-      console.log(reversal_pt_vec[istim]);
-      console.log(correct_response_vec[istim]);
+      // console.log("stimulus, reversal pt, correct response")
+      // console.log(stim)
+      // console.log(reversal_pt_vec[istim]);
+      // console.log(correct_response_vec[istim]);
     }
     let cor = correct_response_vec[istim];
     trial.data.key_answer = cor;
@@ -227,6 +214,10 @@ const createRevTrial = function(b,t,folder,stim,bStart,correct_counter_vec,rever
   timeline.push(trial);
 }
 
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+                    SECOND PRACTICE BLOCK
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+
 
 // second practice w reversal that exits after they get two reversals
 const createPractice2 = function(b,seqs) {
@@ -240,6 +231,7 @@ const createPractice2 = function(b,seqs) {
   let correct_counter_vec = [0];
   let reversal_pt_vec = [5];
   let correct_response_vec = [Math.floor(Math.random()*3)];
+  let revcounter = [0];
 
   // a helper function that adds all the image stimuli for this block. this allows the image files
   // to be dynamically created at the start of each block, so the images will be different to each block according to the image folder.
@@ -264,41 +256,72 @@ const createPractice2 = function(b,seqs) {
 
   //  create trials, interleaving them with fixation
   // var kill_practice = 0;
-  let revcounter = [0];
-  for (t = 0; t < numTrials; t++) {
+  
+  for (t = 0; t < Math.floor(numTrials/2); t++) {
     // console.log("kill practice?")
     // console.log(kill_practice)
     // if (kill_practice == 0) {
       timeline.push(fixation);
       let stim = seqs.allStims[bStart+t];
-      createPracticeRevTrial(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec);
+      createPracticeRevTrial(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec,revcounter);
+  }
+
+  //intermediate feedback for trials
+  const intermedFed = function(trial) {
+    let nrevs = jsPsych.data.get().last().values()[0].nrevs[0]; // calculate points
+    console.log(`n revs: ${nrevs}`);
+    if (nrevs>=2) {
+        trial.stimulus = `<div class="center"><p>It looks like you understand the task!</p>\
+      <br><p>Here is one last practice round.</p></div>`;
+    } else {
+      trial.stimulus = `<div class="center"><p>Remember that there is always ONE correct answer per image.</p>\
+      <br><p>This correct answer will change once in a while! Here is one last practice round. </p></div>`;
+    }
+  }
+  timeline.push({
+    on_start: intermedFed,
+    type: "html-keyboard-response",
+    choices: [32],
+    trial_duration: 30000,
+  });
+
+  // get reversal related variables
+  correct_counter_vec = [0];
+  reversal_pt_vec = [5];
+  correct_response_vec = [Math.floor(Math.random()*2)];
+  revcounter = [0];
+
+  for (t = Math.floor(numTrials/2)+1; t < numTrials; t++) {
+    timeline.push(fixation);
+    let stim = seqs.allStims[bStart+t]+2;
+    console.log(correct_response_vec[0]);
+    createPracticeRevTrial(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec,revcounter);
   }
 }
 
-const createPracticeRevTrial = function(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec) {
+const createPracticeRevTrial = function(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec,revcounter) {
   // helper function that dynamically determines the stimulus as it creates each trial
-
-  let istim = stim-1;
 
   const setTrial = function(trial) {
     // console.log(folder);
     trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
 
     // if participant has gotten some amount correct in a row
-    if (correct_counter_vec[istim] >= reversal_pt_vec[istim]) {
-      correct_counter_vec[istim] = 0;
-      reversal_pt_vec[istim] = Math.floor(Math.random()*3)+3;
+    if (correct_counter_vec[0] >= reversal_pt_vec[0]) {
+      correct_counter_vec[0] = 0;
+      reversal_pt_vec[0] = Math.floor(Math.random()*3)+3;
+      revcounter[0] = revcounter[0]+1;
       let xx = [0,1,2]; // possible responses (hard-coded)
-      xx.splice(correct_response_vec[istim],1); // remove previous response
-      correct_response_vec[istim] = xx[Math.floor(Math.random()*2)]; //randomly sampling from remaining options (hard-coded)
-      console.log("stimulus, reversal pt, correct response")
-      console.log(stim)
-      console.log(reversal_pt_vec[istim]);
-      console.log(correct_response_vec[istim]);
+      xx.splice(correct_response_vec[0],1); // remove previous response
+      correct_response_vec[0] = xx[Math.floor(Math.random()*2)]; //randomly sampling from remaining options (hard-coded)
     }
-    let cor = correct_response_vec[istim];
+    console.log(t);
+    console.log(correct_response_vec);
+
+    let cor = correct_response_vec[0];
     trial.data.key_answer = cor;
     trial.key_answer = KEYS[cor];
+    trial.nrevs = revcounter;
     return trial;
   }
 
@@ -312,14 +335,15 @@ const createPracticeRevTrial = function(b,t,folder,stim,bStart,correct_counter_v
     // console.log(rel_data);
     if (jsPsych.pluginAPI.compareKeys(data.key_press, data.key_answer)) {
       // increase counter if correct
-        correct_counter_vec[istim] = correct_counter_vec[istim]+1;
+        correct_counter_vec[0] = correct_counter_vec[0]+1;
       } else {
         // set counter to zero
-        correct_counter_vec[istim] = 0;
+        correct_counter_vec[0] = 0;
       }
 
-    data.reversal_crit = reversal_pt_vec[istim];
-    data.counter = correct_counter_vec[istim];
+    data.reversal_crit = reversal_pt_vec[0];
+    data.counter = correct_counter_vec[0];
+    data.nrevs = revcounter;
     return data;
   }
   // initialize the trial object
@@ -344,12 +368,8 @@ const createPracticeRevTrial = function(b,t,folder,stim,bStart,correct_counter_v
 }
 
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-                    NON REVERSAL STUFF
+                    FIRST PRACTICE BLOCK
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
-/*Create an experiment block. At the end of each block you will usually give
-feedback to your participant, so you'll need to push a trial object containing
-points or further instructions. This is a good place to save your data.*/
 
 const createPracticeTrial = function(b,t,folder,stim,cor,bStart) {
   // helper function that dynamically determines the stimulus as it creates each trial
@@ -417,72 +437,37 @@ const createPracticeBlock = function(b,seqs) {
   });
 
   //  create trials, interleaving them with fixation
-  for (t = 0; t < numTrials; t++) {
+  for (t = 0; t < Math.floor(numTrials/2); t++) {
     timeline.push(fixation);
     let stim = seqs.allStims[bStart+t];
     let cor = seqs.corKey[bStart+t];
     createPracticeTrial(b,t,folder,stim,cor,bStart);
   }
 
-    //intermediate feedback for trials
-    const intermedFed = function(trial) {
-
-    let toSave = jsPsych.data.get().filter({block: b}); // retrieve block data to save
-    let blockFileName = `${file_name}_block_${b}`; // create new file name for block data
-    save_data_csv(blockFileName, toSave); // save block data
-
-    let pts = jsPsych.data.get().filter({block: b, correct: true}).count(); // calculate points
-    console.log(pts);
-    trial.stimulus = `<div class="center"><p>End of block - you earned ${pts} points!</p>\
-    <br><p>You have a 1 minute break before the next block begins, but you can press space to continue now.</p></div>`;
+  //intermediate feedback for trials
+  const intermedFed = function(trial) {
+    let pts = jsPsych.data.get().last(10).filter({block: b, correct: true}).count(); // calculate points
+    console.log(`points: ${pts}`);
+    if (pts>=8) {
+        trial.stimulus = `<div class="center"><p>Looks like you have a hang of it!</p>\
+      <br><p>Here is another practice round.</p></div>`;
+    } else {
+      trial.stimulus = `<div class="center"><p>Remember that every image has ONE correct key.</p>\
+      <br><p>Try out all the keys to find the correct one! Here is another practice round. </p></div>`;
+    }
   }
 
-  // push block end points and instructions
   timeline.push({
-    on_start: setPoints,
+    on_start: intermedFed,
     type: "html-keyboard-response",
     choices: [32],
-    trial_duration: 60000,
+    trial_duration: 30000,
   });
 
+  for (t = Math.floor(numTrials/2)+1; t < numTrials; t++) {
+    timeline.push(fixation);
+    let stim = seqs.allStims[bStart+t]+2;
+    let cor = seqs.corKey[bStart+t];
+    createPracticeTrial(b,t,folder,stim,cor,bStart);
+  }
 }
-
-
-
-
-// const createTrial = function(b,t,folder,stim,cor,bStart) {
-//   // helper function that dynamically determines the stimulus as it creates each trial
-//   const setTrial = function(trial) {
-//     console.log(folder);
-//     trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
-//     trial.data.key_answer = cor;
-//     trial.key_answer = KEYS[cor];
-//     return trial;
-//   }
-//   // helper function that dynamically updates the data object with info like key press. you can add other values to data as needed
-//   const setData = function(data) {
-//     let answer = data.key_press;
-//     data.stimulus = stim;
-//     data.key_press = KEYS.indexOf(answer);
-//   return data;
-//   }
-//   // initialize the trial object
-//   let trial = {
-//     type: "categorize-html",
-//     correct_text: COR_FB,
-//     incorrect_text: INCOR_FB,
-//     on_start: setTrial,
-//     choices: KEYS,
-//     timeout_message: TO_MSG,
-//     trial_duration: TRIAL_DUR,
-//     feedback_duration: FB_DUR,
-//     on_finish: setData,
-//     show_stim_with_feedback: false,
-//     data: {
-//       set: folder,
-//       block: b,
-//       trial: t+1,
-//     }
-//   };
-//   timeline.push(trial);
-// }
