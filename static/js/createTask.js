@@ -295,7 +295,7 @@ const createPractice2 = function(b,seqs) {
     timeline.push(fixation);
     let stim = seqs.allStims[bStart+t]+2;
     console.log(correct_response_vec[0]);
-    createPracticeRevTrial(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec,revcounter);
+    createPracticeRevTrial1(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec,revcounter);
   }
 }
 
@@ -367,8 +367,76 @@ const createPracticeRevTrial = function(b,t,folder,stim,bStart,correct_counter_v
   timeline.push(trial);
 }
 
+const createPracticeRevTrial1 = function(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec,revcounter) {
+  // helper function that dynamically determines the stimulus as it creates each trial
+
+  const setTrial = function(trial) {
+    // console.log(folder);
+    trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
+
+    // if participant has gotten some amount correct in a row
+    if (correct_counter_vec[0] >= reversal_pt_vec[0]) {
+      correct_counter_vec[0] = 0;
+      reversal_pt_vec[0] = Math.floor(Math.random()*3)+3;
+      revcounter[0] = revcounter[0]+1;
+      let xx = [0,1,2]; // possible responses (hard-coded)
+      xx.splice(correct_response_vec[0],1); // remove previous response
+      correct_response_vec[0] = xx[Math.floor(Math.random()*2)]; //randomly sampling from remaining options (hard-coded)
+    }
+    console.log(t);
+    console.log(correct_response_vec);
+
+    let cor = correct_response_vec[0];
+    trial.data.key_answer = cor;
+    trial.key_answer = KEYS[cor];
+    trial.nrevs = revcounter;
+    return trial;
+  }
+
+  // helper function that dynamically updates the data object with info like key press. you can add other values to data as needed
+  const setData = function(data) {
+    let answer = data.key_press;
+    data.stimulus = stim;
+    data.key_press = KEYS.indexOf(answer);
+
+    // let rel_data = jsPsych.data.get().filter({block: b, stimulus: stim}).last();
+    // console.log(rel_data);
+    if (jsPsych.pluginAPI.compareKeys(data.key_press, data.key_answer)) {
+      // increase counter if correct
+        correct_counter_vec[0] = correct_counter_vec[0]+1;
+      } else {
+        // set counter to zero
+        correct_counter_vec[0] = 0;
+      }
+
+    data.reversal_crit = reversal_pt_vec[0];
+    data.counter = correct_counter_vec[0];
+    data.nrevs = revcounter;
+    return data;
+  }
+  // initialize the trial object
+  let trial = {
+    type: "categorize-html",
+    correct_text: COR_FB,
+    incorrect_text: INCOR_FB,
+    on_start: setTrial,
+    choices: KEYS,
+    timeout_message: TO_MSG,
+    trial_duration: TRIAL_DUR,
+    feedback_duration: FB_DUR,
+    on_finish: setData,
+    show_stim_with_feedback: false,
+    data: {
+      set: folder,
+      block: b,
+      trial: t+1,
+    }
+  };
+  timeline.push(trial);
+}
+
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
-                    FIRST PRACTICE BLOCK
+                            FIRST PRACTICE BLOCK
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
 const createPracticeTrial = function(b,t,folder,stim,cor,bStart) {
@@ -392,6 +460,43 @@ const createPracticeTrial = function(b,t,folder,stim,cor,bStart) {
     type: "categorize-html",
     correct_text: PRAC_COR_FB,
     incorrect_text: PRAC_INCOR_FB,
+    on_start: setTrial,
+    choices: KEYS,
+    timeout_message: TO_MSG,
+    trial_duration: TRIAL_DUR,
+    feedback_duration: FB_DUR,
+    on_finish: setData,
+    show_stim_with_feedback: false,
+    data: {
+      set: folder,
+      block: b,
+      trial: t+1,
+    }
+  };
+  timeline.push(trial);
+}
+
+const createPracticeTrial1 = function(b,t,folder,stim,cor,bStart) {
+  // helper function that dynamically determines the stimulus as it creates each trial
+  const setTrial = function(trial) {
+    console.log(folder);
+    trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
+    trial.data.key_answer = cor;
+    trial.key_answer = KEYS[cor];
+    return trial;
+  }
+  // helper function that dynamically updates the data object with info like key press. you can add other values to data as needed
+  const setData = function(data) {
+    let answer = data.key_press;
+    data.stimulus = stim;
+    data.key_press = KEYS.indexOf(answer);
+  return data;
+  }
+  // initialize the trial object
+  let trial = {
+    type: "categorize-html",
+    correct_text: COR_FB,
+    incorrect_text: INCOR_FB,
     on_start: setTrial,
     choices: KEYS,
     timeout_message: TO_MSG,
@@ -468,6 +573,6 @@ const createPracticeBlock = function(b,seqs) {
     timeline.push(fixation);
     let stim = seqs.allStims[bStart+t]+2;
     let cor = seqs.corKey[bStart+t];
-    createPracticeTrial(b,t,folder,stim,cor,bStart);
+    createPracticeTrial1(b,t,folder,stim,cor,bStart);
   }
 }
