@@ -8,10 +8,10 @@ const IS_RUN_TRAIN = true;
 // experiment parameters
 const KEYS = [74,75,76]; // numeric codes for j,k,l
 const SETSIZES =[2,3,4,5,6];
-const NUM_BLOCKS = 18;
+const NUM_BLOCKS = 23;
 // const NUM_STIM_REPS = 13;
 const NUM_CONDS = 10;
-const FOLDERS = [2,3]; // names of your image folders
+const FOLDERS = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23]; // names of your image folders
 
 // trial timing and timeout parameters
 let FB_DUR = 500; // feedback duration

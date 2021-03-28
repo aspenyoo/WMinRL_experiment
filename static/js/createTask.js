@@ -133,7 +133,7 @@ const createRevBlock = function(b,seqs) {
     save_data_csv(blockFileName, toSave); // save block data
 
     let pts = jsPsych.data.get().filter({block: b, correct: true}).count(); // calculate points
-    console.log(pts);
+    // console.log(pts);
     trial.stimulus = `<div class="center"><p>End of block - you earned ${pts} points!</p>\
     <br><p>You have a 1 minute break before the next block begins, but you can press space to continue now.</p></div>`;
   }
@@ -294,7 +294,7 @@ const createPractice2 = function(b,seqs) {
   for (t = Math.floor(numTrials/2)+1; t < numTrials; t++) {
     timeline.push(fixation);
     let stim = seqs.allStims[bStart+t]+2;
-    console.log(correct_response_vec[0]);
+    // console.log(correct_response_vec[0]);
     createPracticeRevTrial1(b,t,folder,stim,bStart,correct_counter_vec,reversal_pt_vec,correct_response_vec,revcounter);
   }
 }
@@ -315,8 +315,8 @@ const createPracticeRevTrial = function(b,t,folder,stim,bStart,correct_counter_v
       xx.splice(correct_response_vec[0],1); // remove previous response
       correct_response_vec[0] = xx[Math.floor(Math.random()*2)]; //randomly sampling from remaining options (hard-coded)
     }
-    console.log(t);
-    console.log(correct_response_vec);
+    // console.log(t);
+    // console.log(correct_response_vec);
 
     let cor = correct_response_vec[0];
     trial.data.key_answer = cor;
@@ -383,8 +383,8 @@ const createPracticeRevTrial1 = function(b,t,folder,stim,bStart,correct_counter_
       xx.splice(correct_response_vec[0],1); // remove previous response
       correct_response_vec[0] = xx[Math.floor(Math.random()*2)]; //randomly sampling from remaining options (hard-coded)
     }
-    console.log(t);
-    console.log(correct_response_vec);
+    // console.log(t);
+    // console.log(correct_response_vec);
 
     let cor = correct_response_vec[0];
     trial.data.key_answer = cor;
@@ -442,7 +442,7 @@ const createPracticeRevTrial1 = function(b,t,folder,stim,bStart,correct_counter_
 const createPracticeTrial = function(b,t,folder,stim,cor,bStart) {
   // helper function that dynamically determines the stimulus as it creates each trial
   const setTrial = function(trial) {
-    console.log(folder);
+    // console.log(folder);
     trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
     trial.data.key_answer = cor;
     trial.key_answer = KEYS[cor];
@@ -479,7 +479,7 @@ const createPracticeTrial = function(b,t,folder,stim,cor,bStart) {
 const createPracticeTrial1 = function(b,t,folder,stim,cor,bStart) {
   // helper function that dynamically determines the stimulus as it creates each trial
   const setTrial = function(trial) {
-    console.log(folder);
+    // console.log(folder);
     trial.stimulus = `<div class="exp"><img class="stim center" src="${imgP}images${folder}/image${stim}.jpg"></div>`;
     trial.data.key_answer = cor;
     trial.key_answer = KEYS[cor];
